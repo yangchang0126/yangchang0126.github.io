@@ -2,6 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://github.com/2022/06/29/Graph%20Embedding/</loc>
+    
+    <lastmod>2022-06-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://github.com/2022/06/29/Boltzmann/</loc>
+    
+    <lastmod>2022-06-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://github.com/2022/06/29/undefined/</loc>
+    
+    <lastmod>2022-06-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://github.com/2022/06/28/%E6%B1%BD%E8%BD%A6%E9%A2%86%E5%9F%9F%E5%A4%9A%E8%AF%AD%E7%A7%8D%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%8C%91%E6%88%98%E8%B5%9B/</loc>
     
     <lastmod>2022-06-28</lastmod>
@@ -22,11 +49,18 @@
 
   <url>
     <loc>http://github.com/</loc>
-    <lastmod>2022-06-28</lastmod>
+    <lastmod>2022-06-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
+  
+  <url>
+    <loc>http://github.com/tags/%E6%AF%94%E8%B5%9B/</loc>
+    <lastmod>2022-06-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
 
   

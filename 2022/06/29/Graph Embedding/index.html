@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>yangchang's blog | yangchang's blog</title><meta name="author" content="yangchang"><meta name="copyright" content="yangchang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. DeepWalk思想：给定一个节点，根据边进行下一个节点的随机游走，经过随机游走得到的序列，在通过word2ec训练每一个节点的embedding（skip-gram） 解释：思想类似word2ec，使用图中节点与节点的共现关系来学习节点的向量表示，如何来描述节点与节点间的共现关系，DeepWalk给出的方法是随机游走的方式在图中进行节点采样 RandomWalk是一种可重复访问已访问节点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yangchang's blog">
+<meta property="og:url" content="http://github.com/2022/06/29/Graph%20Embedding/index.html">
+<meta property="og:site_name" content="yangchang's blog">
+<meta property="og:description" content="1. DeepWalk思想：给定一个节点，根据边进行下一个节点的随机游走，经过随机游走得到的序列，在通过word2ec训练每一个节点的embedding（skip-gram） 解释：思想类似word2ec，使用图中节点与节点的共现关系来学习节点的向量表示，如何来描述节点与节点间的共现关系，DeepWalk给出的方法是随机游走的方式在图中进行节点采样 RandomWalk是一种可重复访问已访问节点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)">
+<meta property="article:published_time" content="2022-06-29T15:03:59.272Z">
+<meta property="article:modified_time" content="2022-06-30T01:55:51.652Z">
+<meta property="article:author" content="yangchang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://github.com/2022/06/29/Graph%20Embedding/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><meta><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'yangchang\'s blog',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2022-06-30 09:55:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="yangchang's blog" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: linear-gradient(20deg, #0062be, #925696, #cc426e, #fb0347)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yangchang's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">无题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-29T15:03:59.272Z" title="发表于 2022-06-29 23:03:59">2022-06-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-06-30T01:55:51.652Z" title="更新于 2022-06-30 09:55:51">2022-06-30</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630082546597.png" alt="image-20220630082546597"></p>
+<h1 id="1-DeepWalk"><a href="#1-DeepWalk" class="headerlink" title="1. DeepWalk"></a>1. DeepWalk</h1><p><strong>思想</strong>：给定一个节点，根据边进行下一个节点的随机游走，经过随机游走得到的序列，在通过word2ec训练每一个节点的embedding（skip-gram）</p>
+<p><strong>解释</strong>：思想类似word2ec，使用图中节点与节点的共现关系来学习节点的向量表示，如何来描述节点与节点间的共现关系，DeepWalk给出的方法是随机游走的方式在图中进行节点采样</p>
+<p>RandomWalk是一种可重复访问已访问节点的深度优先遍历算法，给定当前访问起始节点，从其邻居中随机采样节点作为下一个访问节点，重复此过程，直到访问序列长度满足预设条件</p>
+<p>获取足够数量的节点访问序列之后，使用skip-gram model进行向量学习</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220629232115295.png" alt="image-20220629232115295"></p>
+<p><strong>算法：</strong>DeepWalk算法主要包括两个步骤，第一步为随机游走采样节点序列，第二步为使用skip-gram modelword2vec学习表达向量。</p>
+<p>①构建同构网络，从网络中的每个节点开始分别进行Random Walk 采样，得到局部相关联的训练数据； ②对采样数据进行SkipGram训练，将离散的网络节点表示成向量化，最大化节点共现，使用Hierarchical Softmax来做超大规模分类的分类器</p>
+<p>我们可以通过并行的方式加速路径采样，在采用多进程进行加速时，相比于开一个进程池让每次外层循环启动一个进程，我们采用固定为每个进程分配指定数量的<code>num_walks</code>的方式，这样可以最大限度减少进程频繁创建与销毁的时间开销。</p>
+<p><code>deepwalk_walk</code>方法对应上一节伪代码中第6行，<code>_simulate_walks</code>对应伪代码中第3行开始的外层循环。最后的<code>Parallel</code>为多进程并行时的任务分配操作。</p>
+<h1 id="2-LINE：Large-size-Information-Network-Embedding"><a href="#2-LINE：Large-size-Information-Network-Embedding" class="headerlink" title="2.LINE：Large-size Information Network Embedding"></a>2.LINE：Large-size Information Network Embedding</h1><p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220629234524068.png" alt="image-20220629234524068"></p>
+<p>LINE也是一种基于邻域相似假设的方法，是大规模图上表示节点之间的结构信息</p>
+<p><strong>与DeepWalk区别：</strong></p>
+<p>DeepWalk使用的深度优先搜索DFS，LINE可以看作是一种广度优先搜索BFS构造邻域的算法</p>
+<p>LINE还可以用在带权图中，DeepWalk仅能用于无权图</p>
+<p><strong>一种新的相似度定义：</strong></p>
+<ol>
+<li><p>一阶相似性：用于描述图中成对顶点之间的局部相似度（局部的结构信息）</p>
+<p>形式化描述为若 <img src="https://www.zhihu.com/equation?tex=u" alt="[公式]"> , <img src="https://www.zhihu.com/equation?tex=v" alt="[公式]"> 之间存在直连边，则边权 <img src="https://www.zhihu.com/equation?tex=w_%7Buv%7D" alt="[公式]"> 即为两个顶点的相似度，若不存在直连边，则1阶相似度为0</p>
+</li>
+<li><p>二阶相似性：虽然5和6之间不存在直连边，但是他们有很多相同的邻居顶点(1,2,3,4)，这其实也可以表明5和6是相似的，而2阶相似度就是用来描述这种关系的。（节点的邻居，共享邻居的节点可能是相似的）</p>
+<p> 形式化定义为，令 <img src="https://www.zhihu.com/equation?tex=p_u=(w_%7Bu,1%7D,...,w_%7Bu,%7CV%7C%7D)" alt="[公式]"> 表示顶点 <img src="https://www.zhihu.com/equation?tex=u" alt="[公式]"> 与所有其他顶点间的1阶相似度，则 <img src="https://www.zhihu.com/equation?tex=u" alt="[公式]"> 与 <img src="https://www.zhihu.com/equation?tex=v" alt="[公式]"> 的2阶相似度可以通过 <img src="https://www.zhihu.com/equation?tex=p_u" alt="[公式]"> 和 <img src="https://www.zhihu.com/equation?tex=p_v" alt="[公式]"> 的相似度表示。若<img src="https://www.zhihu.com/equation?tex=u" alt="[公式]">与<img src="https://www.zhihu.com/equation?tex=v" alt="[公式]">之间不存在相同的邻居顶点，则2阶相似度为0。</p>
+</li>
+</ol>
+<p><strong>优化</strong></p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220629235431943.png" alt="image-20220629235431943"></p>
+<p><strong>1st order 相似度只能用于无向图当中</strong></p>
+<p>对于二阶相似性：对于每个顶点维护两个embedding向量，一个是该顶点本身的表示向量，一个是该点作为其他顶点的上下文顶点时的表示向量。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220629235622243.png" alt="image-20220629235622243"></p>
+<p><strong>优化技巧</strong></p>
+<p><strong>Negative sampling</strong></p>
+<p>由于计算2阶相似度时，softmax函数的分母计算需要遍历所有顶点，这是非常低效的，论文采用了负采样优化的技巧，目标函数变为：</p>
+<p><img src="https://www.zhihu.com/equation?tex=%5Clog%7B%5Csigma(%7B%5Cvec%7Bu%7D%5ET_j%5Ccdot%5Cvec%7Bu%7D_i%7D)%7D+%5Csum_%7Bi=1%7D%5EK%7BE_%7Bv_n%5Csim+P_n(v)%7D%5B-%5Clog%7B%5Csigma(%7B%5Cvec%7Bu%7D%5ET_n%5Ccdot%5Cvec%7Bu%7D_i%7D)%7D%5D%7D" alt="[公式]"> ， <img src="https://www.zhihu.com/equation?tex=K" alt="[公式]"> 是负边的个数。</p>
+<p>论文使用 <img src="https://www.zhihu.com/equation?tex=P_n(v)%5Cpropto+d_v%5E%7B3/4%7D" alt="[公式]"> ， <img src="https://www.zhihu.com/equation?tex=d_v" alt="[公式]"> 是顶点 <img src="https://www.zhihu.com/equation?tex=v" alt="[公式]"> 的出度</p>
+<p><strong>Edge Sampling</strong></p>
+<p>注意到我们的目标函数在log之前还有一个权重系数 <img src="https://www.zhihu.com/equation?tex=w_%7Bij%7D" alt="[公式]"> ，在使用梯度下降方法优化参数时， <img src="https://www.zhihu.com/equation?tex=w_%7Bij%7D" alt="[公式]"> 会直接乘在梯度上。如果图中的边权方差很大，则很难选择一个合适的学习率。若使用较大的学习率那么对于较大的边权可能会引起梯度爆炸，较小的学习率对于较小的边权则会导致梯度过小。</p>
+<p>对于上述问题，如果所有边权相同，那么选择一个合适的学习率会变得容易。这里采用了将带权边拆分为等权边的一种方法，假如一个权重为 <img src="https://www.zhihu.com/equation?tex=w" alt="[公式]"> 的边，则拆分后为 <img src="https://www.zhihu.com/equation?tex=w" alt="[公式]"> 个权重为1的边。这样可以解决学习率选择的问题，但是由于边数的增长，存储的需求也会增加。</p>
+<p>另一种方法则是从原始的带权边中进行采样，每条边被采样的概率正比于原始图中边的权重，这样既解决了学习率的问题，又没有带来过多的存储开销。</p>
+<h1 id="3-node2vec"><a href="#3-node2vec" class="headerlink" title="3. node2vec"></a>3. node2vec</h1><p>node2vec可以说是DeepWalk的扩展，<strong>是结合了DFS和BFS随机游走的DeepWalk</strong>，通过两个参数p和q来控制DFS和BFS两种方式的随机游走，而DeepWalk是不加制约，漫无目的的游走，不能显示展开节点之间的结构信息</p>
+<p>homophily：同质性（周围节点的embedding相似）</p>
+<p>structural equivalence：结构等价性（同等位置的embedding相似）</p>
+<p><strong>优化目标</strong></p>
+<p>设 <img src="https://www.zhihu.com/equation?tex=f(u)" alt="[公式]"> 是将顶点 <img src="https://www.zhihu.com/equation?tex=u" alt="[公式]"> 映射为embedding向量的映射函数,对于图中每个顶点<img src="https://www.zhihu.com/equation?tex=u" alt="[公式]">，定义 <img src="https://www.zhihu.com/equation?tex=N_S(u)" alt="[公式]"> 为通过采样策略 <img src="https://www.zhihu.com/equation?tex=S" alt="[公式]"> 采样出的顶点 <img src="https://www.zhihu.com/equation?tex=u" alt="[公式]"> 的近邻顶点集合。</p>
+<p>node2vec优化的目标是给定每个顶点条件下，令其近邻顶点（<strong>如何定义近邻顶点很重要</strong>）出现的概率最大。</p>
+<p><img src="https://www.zhihu.com/equation?tex=max_f+%7B%5Csum_%7Bu%5Cin+V%7D%5Clog%7BPr(N_S(U)%7Cf(u))%7D%7D" alt="[公式]"></p>
+<p>为了将上述最优化问题可解，文章提出两个假设：</p>
+<ul>
+<li>条件独立性假设</li>
+</ul>
+<p>假设给定源顶点下，其近邻顶点出现的概率与近邻集合中其余顶点无关。   <img src="https://www.zhihu.com/equation?tex=Pr(N_s(u)%7Cf(u))=%5Cprod_%7Bn_i%5Cin+N_s(u)%7D+Pr(n_i%7Cf(u))" alt="[公式]"></p>
+<ul>
+<li>特征空间对称性假设</li>
+</ul>
+<p>这里是说一个顶点作为源顶点和作为近邻顶点的时候<strong>共享同一套embedding向量</strong>。(对比LINE中的2阶相似度，一个顶点作为源点和近邻点的时候是拥有不同的embedding向量的) 在这个假设下，上述条件概率公式可表示为</p>
+<p> <img src="https://www.zhihu.com/equation?tex=Pr(n_i%7Cf(u))=%5Cfrac%7B%5Cexp%7Bf(n_i)%5Ccdot+f(u)%7D%7D%7B%5Csum_%7Bv%5Cin+V%7D%7B%5Cexp%7Bf(v)%5Ccdot+f(u)%7D%7D%7D" alt="[公式]"></p>
+<p><strong>根据以上两个假设条件，最终的目标函数表示为</strong>：</p>
+<p> <img src="https://www.zhihu.com/equation?tex=max_f%7B%5Csum_%7Bu%5Cin+V%7D%5B-%5Clog%7BZ_u%7D+%5Csum_%7Bn_i%5Cin+N_s(u)%7D%7Bf(n_i)%5Ccdot+f(u)%7D%5D%7D" alt="[公式]"></p>
+<p>由于归一化因子 <img src="https://www.zhihu.com/equation?tex=Z_u=%5Csum_%7Bn_i%5Cin+N_s(u)%7D%7B%5Cexp(f(n_i)%5Ccdot+f(u))%7D" alt="[公式]"> 的计算代价高，所以采用<strong>负采样</strong>技术优化。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630084422682.png" alt="image-20220630084422682"></p>
+<ol>
+<li><strong>顶点序列采样策略</strong></li>
+</ol>
+<p>node2vec依然采用随机游走的方式获取顶点的近邻序列，不同的是node2vec采用的是一种有偏的随机游走。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630083546766.png" alt="image-20220630083546766"></p>
+<p>参数<img src="https://www.zhihu.com/equation?tex=p" alt="[公式]">控制重复访问刚刚访问过的顶点的概率。 注意到<img src="https://www.zhihu.com/equation?tex=p" alt="[公式]">仅作用于 <img src="https://www.zhihu.com/equation?tex=d_%7Btx%7D=0" alt="[公式]"> 的情况，而 <img src="https://www.zhihu.com/equation?tex=d_%7Btx%7D=0" alt="[公式]"> 表示顶点 <img src="https://www.zhihu.com/equation?tex=x" alt="[公式]"> 就是访问当前顶点 <img src="https://www.zhihu.com/equation?tex=v" alt="[公式]"> 之前刚刚访问过的顶点。 那么若 <img src="https://www.zhihu.com/equation?tex=p" alt="[公式]"> 较高，则访问刚刚访问过的顶点的概率会变低，反之变高</p>
+<p><img src="https://www.zhihu.com/equation?tex=q" alt="[公式]"> 控制着游走是向外还是向内，若 <img src="https://www.zhihu.com/equation?tex=q%3E1" alt="[公式]"> ，随机游走倾向于访问和 <img src="https://www.zhihu.com/equation?tex=t" alt="[公式]"> 接近的顶点(偏向BFS)。若 <img src="https://www.zhihu.com/equation?tex=q%3C1" alt="[公式]"> ，倾向于访问远离 <img src="https://www.zhihu.com/equation?tex=t" alt="[公式]"> 的顶点(偏向DFS)。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630082154268.png" alt="image-20220630082154268"></p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630084059619.png" alt="image-20220630084059619"></p>
+<p>由于采样时需要考虑前面2步访问过的顶点，所以当访问序列中只有1个顶点时，直接使用当前顶点和邻居顶点之间的边权作为采样依据。 当序列多余2个顶点时，使用文章提到的有偏采样。</p>
+<h1 id="4-Sturc2Vec"><a href="#4-Sturc2Vec" class="headerlink" title="4. Sturc2Vec"></a>4. Sturc2Vec</h1><p>之前的embedding方法都是基于近邻关系，有些节点没有近邻关系，但也有相似的结构，Struc2Vec是从空间结构相似性的角度定义顶点相似度的</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630084827812.png" alt="image-20220630084827812"></p>
+<p>直观来看，具有相同度数的顶点是结构相似的，若各自邻接顶点仍然具有相同度数，那么他们的相似度就更高。</p>
+<ol>
+<li><h4 id="顶点对距离定义"><a href="#顶点对距离定义" class="headerlink" title="顶点对距离定义"></a><strong>顶点对距离定义</strong></h4></li>
+</ol>
+<p><img src="https://www.zhihu.com/equation?tex=R_k(u)" alt="[公式]"> 表示到顶点u距离为k的顶点集合</p>
+<p><img src="https://www.zhihu.com/equation?tex=s(S)" alt="[公式]"> 表示顶点集合S的<strong>有序度序列</strong></p>
+<p> <img src="https://www.zhihu.com/equation?tex=f_k(u,v)" alt="[公式]"> 表示顶点u和v之间距离为k（这里的距离k实际上是指距离小于等于k的节点集合）的环路上的结构距离(注意是距离，不是相似度)</p>
+<p><img src="https://www.zhihu.com/equation?tex=f_k(u,v)=f_%7Bk-1%7D(u,v)+g(s(R_k(u)),s(R_k(v))),k%5Cge+0+%5Ctext%7B+and+%7D+%7CR_k(u)%7C,%7CR_k(v)%7C%3E0" alt="[公式]"></p>
+<p>其中 <img src="https://www.zhihu.com/equation?tex=g(D_1,D_2)%5Cge+0" alt="[公式]"> 是衡量有序度序列 <img src="https://www.zhihu.com/equation?tex=D_1" alt="[公式]"> 和 <img src="https://www.zhihu.com/equation?tex=D_2" alt="[公式]"> 的距离的函数，并且 <img src="https://www.zhihu.com/equation?tex=f_%7B-1%7D=0" alt="[公式]"> .</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630085802852.png" alt="image-20220630085802852"></p>
+<p>下面就是如何定义有序度序列之间的比较函数了，由于 <img src="https://www.zhihu.com/equation?tex=s(R_k(u))" alt="[公式]"> 和 <img src="https://www.zhihu.com/equation?tex=s(R_k(v))" alt="[公式]"> 的长度不同，并且可能含有重复元素。所以文章采用了**Dynamic Time Warping(DTW)**来衡量两个有序度序列。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630090037010.png" alt="image-20220630090037010"></p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630090237830.png" alt="image-20220630090237830"></p>
+<p>一句话，DTW可以用来衡量两个不同长度且含有重复元素的的序列的距离（距离的定义可以自己设置）。</p>
+<p>基于DTW，定义元素之间的距离函数</p>
+<p> <img src="https://www.zhihu.com/equation?tex=d(a,b)=%5Cfrac%7Bmax(a,b)%7D%7Bmin(a,b)%7D-1" alt="[公式]"></p>
+<ol start="2">
+<li><h4 id="构建层次带权图"><a href="#构建层次带权图" class="headerlink" title="构建层次带权图"></a><strong>构建层次带权图</strong></h4></li>
+</ol>
+<p>根据上一节的距离定义，对于每一个 <img src="https://www.zhihu.com/equation?tex=k" alt="[公式]"> 我们都可以计算出两个顶点之间的一个距离，现在要做的是通过上一节得到的顶点之间的有序度序列距离来构建一个层次化的带权图（用于后续的随机游走)</p>
+<p>我们定义在<strong>某一层k中两个顶点</strong>的边权为 <img src="https://www.zhihu.com/equation?tex=w_k(u,v)=e%5E%7B-f_k(u,v)%7D,k=0,...,k%5E*" alt="[公式]"></p>
+<p>这样定义的边权都是小于1的，当且仅当距离为0的是时候，边权为1。</p>
+<p>通过有向边将<strong>属于不同层次的同一顶点</strong>连接起来，具体来说，对每个顶点，都会和其对应的上层顶点还有下层顶点相连。边权定义为</p>
+<p><img src="https://www.zhihu.com/equation?tex=w(u_k,u_%7Bk+1%7D)=%5Clog%7B(%5CGamma_%7Bk%7D(u)+e)%7D,k=0,...,k%5E*-1" alt="[公式]"></p>
+<p><img src="https://www.zhihu.com/equation?tex=w(u_k,u_%7Bk-1%7D)=1" alt="[公式]"></p>
+<p>其中 <img src="https://www.zhihu.com/equation?tex=%5CGamma_k(u)" alt="[公式]"> 是第k层与u相连的边的边权大于平均边权的边的数量。 <img src="https://www.zhihu.com/equation?tex=%5CGamma_k(u)+=+%5Csum_%7Bv+%5Cin+V%7D+1(w_k(u,v)%3E%5Cbar%7Bw_k%7D)" alt="[公式]"> ， <img src="https://www.zhihu.com/equation?tex=%5Cbar%7Bw_k%7D" alt="[公式]"> 就是第k层所有边权的平均值。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630090638407.png" alt="image-20220630090638407"></p>
+<ol start="3">
+<li><h4 id="采样获取顶点序列"><a href="#采样获取顶点序列" class="headerlink" title="采样获取顶点序列"></a>采样获取顶点序列</h4></li>
+</ol>
+<p>使用有偏随机游走在构造出的图 <img src="https://www.zhihu.com/equation?tex=M" alt="[公式]"> 中进行顶点序列采样。 每次采样时，首先决定是在当前层游走，还是切换到上下层的层游走。</p>
+<p>若决定在当前层游走，设当前处于第k层，则从顶点u到顶点v的概率为</p>
+<p> <img src="https://www.zhihu.com/equation?tex=p_k(u,v)=%5Cfrac%7Be%5E%7B-f_k(u,v)%7D%7D%7BZ_k(u)%7D" alt="[公式]"> </p>
+<p>其中 <img src="https://www.zhihu.com/equation?tex=Z_k(u)=%5Csum_%7Bv%5Cin+V,v%5Cne+u%7De%5E%7B-f_k(u,v)%7D" alt="[公式]"> 是第k层中关于顶点u的归一化因子。</p>
+<p>通过在图M中进行随机游走，每次采样的顶点更倾向于选择与当前顶点结构相似的顶点。因此，采样生成的上下文顶点很可能是结构相似的顶点，这与顶点在图中的位置无关。</p>
+<p>若决定切换不同的层，则以如下的概率选择 <img src="https://www.zhihu.com/equation?tex=k+1" alt="[公式]"> 层或 <img src="https://www.zhihu.com/equation?tex=k-1" alt="[公式]"> 层，</p>
+<p><img src="https://www.zhihu.com/equation?tex=p_k(u_k,u_%7Bk+1%7D)=%5Cfrac%7Bw(u_k,u_%7Bk+1%7D)%7D%7Bw(u_k,u_%7Bk+1%7D)+w(u_k,u_%7Bk-1%7D)%7D" alt="[公式]"></p>
+<p><img src="https://www.zhihu.com/equation?tex=p_k(u_k,u_%7Bk-1%7D)=1-p_k(u_k,u_k+1)" alt="[公式]"></p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630091015987.png" alt="image-20220630091015987"></p>
+<p><strong>三个时空复杂度优化技巧</strong></p>
+<ol>
+<li>OPT1 有序度序列长度优化</li>
+</ol>
+<p>前面提到过对于每个顶点在每一层都有一个有序度序列，而每一个度序列的空间复杂度为O(n)。</p>
+<p>文章提出一种压缩表示方法，对于序列中出现的每一个度，计算该度在序列里出现的次数。压缩后的有序度序列存储的是**(度数，出现次数)**这样的二元组。</p>
+<p>同时修改距离函数为： <img src="https://www.zhihu.com/equation?tex=dist(a,b)=(%5Cfrac%7Bmax(a_0,b_0)%7D%7Bmin(a_0,b_0)%7D-1)max(a_1,b_1)" alt="[公式]"> <img src="https://www.zhihu.com/equation?tex=a_0,b_0" alt="[公式]"> 为度数， <img src="https://www.zhihu.com/equation?tex=a_1,b_1" alt="[公式]"> 为度的出现次数。</p>
+<ol start="2">
+<li><strong>OPT2 相似度计算优化</strong></li>
+</ol>
+<p>在原始的方法中，我们需要计算每一层k中，任意两个顶点之间的相似度。事实上，这是不必要的。因为<strong>两个度数相差很大的顶点，即使在 <img src="https://www.zhihu.com/equation?tex=k=0" alt="[公式]"> 的时候他们的距离也已经非常大了，那么在随机游走时这样的边就几乎不可能被采样到</strong>，所以我们也没必要计算这两个顶点之间的距离。</p>
+<p>文章给出的方法是在计算顶点u和其他顶点之间的距离时，<strong>只计算那些与顶点u的度数接近的顶点的距离</strong>。具体来说，<strong>在顶点u对应的有序度序列中进行二分查找，查找的过程就是不断逼近顶点u的度数的过程，只计算查找路径上的顶点与u的距离。</strong> 这样每一次需要计算的边的数量从 <img src="https://www.zhihu.com/equation?tex=n%5E2" alt="[公式]"> 数量级缩减到 <img src="https://www.zhihu.com/equation?tex=n%5Clog%7Bn%7D" alt="[公式]"> 。</p>
+<ol start="3">
+<li><strong>OPT3 限制层次带权图层数</strong></li>
+</ol>
+<p>层次带权图M中的层数是由图的直径 <img src="https://www.zhihu.com/equation?tex=k%5E*" alt="[公式]"> 决定的。但是对很多图来说，图的直径会远远大于顶点之间的平均距离。</p>
+<p>当k接近 <img src="https://www.zhihu.com/equation?tex=k%5E*" alt="[公式]"> 时，环上的度序列 <img src="https://www.zhihu.com/equation?tex=s(R_k(u))" alt="[公式]"> 长度也会变得很短， <img src="https://www.zhihu.com/equation?tex=f_k(u,v)" alt="[公式]"> 和 <img src="https://www.zhihu.com/equation?tex=f_%7Bk-1%7D(u,v)" alt="[公式]"> 会变得接近。</p>
+<p><strong>因此将图中的层数限制为</strong> <img src="https://www.zhihu.com/equation?tex=k%5E%7B%27%7D%3Ck%5E*" alt="[公式]"> ，<strong>使用最重要的一些层来评估结构相似度</strong>。</p>
+<p>这样的限制显著降低构造M时的计算和存储开销。</p>
+<h1 id="5-SDNE：Structural-Deep-Network-Embedding"><a href="#5-SDNE：Structural-Deep-Network-Embedding" class="headerlink" title="5. SDNE：Structural Deep Network Embedding"></a>5. SDNE：Structural Deep Network Embedding</h1><p>可以看作是基于LINE的扩展，同时也是第一个将深度学习应用于网络表示学习中的方法—使用多个非线性层来捕获model的embedding</p>
+<p>SDNE中的相似度定义和LINE是一样的。简单来说，1阶相似度衡量的是相邻的两个顶点对之间相似性。2阶相似度衡量的是，两个顶点他们的邻居集合的相似程度。</p>
+<p>但SDNE使用一个自动编码器来同时优化一阶和二阶相似性，学习得到的向量表示能够保留局部和全局结构，并且对稀疏网络有鲁棒性；而LINE是分开优化的</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630094741145.png" alt="image-20220630094741145"></p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630094821662.png" alt="image-20220630094821662"></p>
+<p><strong>2阶相似度优化目标</strong></p>
+<p><img src="https://www.zhihu.com/equation?tex=L_%7B2nd%7D=%5Csum_%7Bi=1%7D%5En%7B%7C%7C%5Chat%7Bx%7D_i-x_i%7C%7C%5E2_2%7D" alt="[公式]"></p>
+<p>这里我们使用图的邻接矩阵进行输入，对于第 <img src="https://www.zhihu.com/equation?tex=i" alt="[公式]"> 个顶点，有 <img src="https://www.zhihu.com/equation?tex=x_i=s_i" alt="[公式]"> ，每一个 <img src="https://www.zhihu.com/equation?tex=s_i" alt="[公式]"> 都包含了顶点i的邻居结构信息，所以这样的重构过程能够使得结构相似的顶点具有相似的embedding表示向量。</p>
+<p>这里存在的一个问题是由于图的稀疏性，邻接矩阵S中的非零元素是远远少于零元素的，那么对于神经网络来说只要全部输出0也能取得一个不错的效果，这不是我们想要的。</p>
+<p>文章给出的一个方法是使用带权损失函数，对于非零元素具有更高的惩罚系数。 修正后的损失函数为</p>
+<p><img src="https://www.zhihu.com/equation?tex=L_%7B2nd%7D=%5Csum_%7Bi=1%7D%5En%7B%7C%7C(%5Chat%7Bx%7D_i-x_i)%5Codot+%5Cbold%7Bb_i%7D%7C%7C%5E2_2%7D+=%7C%7C(%5Chat%7BX%7D-X)%5Codot+B%7C%7C%5E2_F" alt="[公式]"></p>
+<p>其中 <img src="https://www.zhihu.com/equation?tex=%5Codot" alt="[公式]"> 为逐元素积， <img src="https://www.zhihu.com/equation?tex=%5Cbold%7Bb_i%7D=%5Cleft%5C%7B+b_%7Bi,j%7D%5Cright%5C%7D%5En_%7Bj=1%7D++" alt="[公式]"> ，若 <img src="https://www.zhihu.com/equation?tex=s_%7Bi,j%7D=0" alt="[公式]"> ，则 <img src="https://www.zhihu.com/equation?tex=b_%7Bi,j%7D=1" alt="[公式]"> ，否则 <img src="https://www.zhihu.com/equation?tex=b_%7Bi,j%7D=%5Cbeta%3E1" alt="[公式]"></p>
+<p><strong>1阶相似度优化目标</strong></p>
+<p>对于1阶相似度，损失函数定义如下 <img src="https://www.zhihu.com/equation?tex=L_%7B1st%7D++=%5Csum_%7Bi,j=1%7D%5En%7Bs_%7Bi,j%7D%7C%7C%5Cbold%7By_i%7D%5E%7B(K)%7D-%5Cbold%7By_j%7D%5E%7B(K)%7D%7C%7C%5E2_2%7D+=%5Csum_%7Bi,j=1%7D%5En%7Bs_%7Bi,j%7D%7C%7C%5Cbold%7By_i%7D-%5Cbold%7By_j%7D%7C%7C%5E2_2%7D" alt="[公式]"></p>
+<p>该损失函数可以让图中的相邻的两个顶点对应的embedding vector在隐藏空间接近。</p>
+<p><img src="https://www.zhihu.com/equation?tex=L_%7B1st%7D" alt="[公式]"> 还可以表示为</p>
+<p><img src="https://www.zhihu.com/equation?tex=L_%7B1st%7D=%5Csum_%7Bi,j=1%7D%5En%7C%7C%5Cbold%7By%7D_i-%5Cbold%7By%7D_j%7C%7C%5E2_2=2tr(Y%5ETLY)" alt="[公式]"></p>
+<p>其中L是图对应的拉普拉斯矩阵， <img src="https://www.zhihu.com/equation?tex=L+=+D-S" alt="[公式]"> ，D是图中顶点的度矩阵，S是邻接矩阵， <img src="https://www.zhihu.com/equation?tex=D_%7Bi,i%7D=%5Csum_%7Bj%7Ds_%7Bi,j%7D" alt="[公式]"> 。</p>
+<p><strong>整体优化目标</strong></p>
+<p>联合优化的损失函数为 <img src="https://www.zhihu.com/equation?tex=L_%7Bmix%7D=L_%7B2nd%7D+%5Calpha+L_%7B1st%7D+%5Cnu+L_%7Breg%7D" alt="[公式]"></p>
+<p><img src="https://www.zhihu.com/equation?tex=L_%7Breg%7D" alt="[公式]"> 是正则化项， <img src="https://www.zhihu.com/equation?tex=%5Calpha" alt="[公式]"> 为控制1阶损失的参数， <img src="https://www.zhihu.com/equation?tex=%5Cnu" alt="[公式]"> 为控制正则化项的参数。</p>
+<p><img src="/home/yangchang/snap/typora/57/.config/Typora/typora-user-images/image-20220630095011186.png" alt="image-20220630095011186"></p>
+<p>文章提出使用深度信念网络进行预训练来获得较好的参数初始化</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://github.com">yangchang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://github.com/2022/06/29/Graph%20Embedding/">http://github.com/2022/06/29/Graph%20Embedding/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://github.com" target="_blank">yangchang's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/06/29/Boltzmann/"><img class="next-cover" src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">yangchang</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" href="https://github.com/yangchang0126"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/yangchang0126" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yangchang0126@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-DeepWalk"><span class="toc-number">1.</span> <span class="toc-text">1. DeepWalk</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-LINE%EF%BC%9ALarge-size-Information-Network-Embedding"><span class="toc-number">2.</span> <span class="toc-text">2.LINE：Large-size Information Network Embedding</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-node2vec"><span class="toc-number">3.</span> <span class="toc-text">3. node2vec</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-Sturc2Vec"><span class="toc-number">4.</span> <span class="toc-text">4. Sturc2Vec</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A1%B6%E7%82%B9%E5%AF%B9%E8%B7%9D%E7%A6%BB%E5%AE%9A%E4%B9%89"><span class="toc-number">4.0.0.1.</span> <span class="toc-text">顶点对距离定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%B1%82%E6%AC%A1%E5%B8%A6%E6%9D%83%E5%9B%BE"><span class="toc-number">4.0.0.2.</span> <span class="toc-text">构建层次带权图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E8%8E%B7%E5%8F%96%E9%A1%B6%E7%82%B9%E5%BA%8F%E5%88%97"><span class="toc-number">4.0.0.3.</span> <span class="toc-text">采样获取顶点序列</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#5-SDNE%EF%BC%9AStructural-Deep-Network-Embedding"><span class="toc-number">5.</span> <span class="toc-text">5. SDNE：Structural Deep Network Embedding</span></a></li></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/06/29/Graph%20Embedding/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/06/29/Graph%20Embedding/" title="无题">无题</a><time datetime="2022-06-29T15:03:59.272Z" title="发表于 2022-06-29 23:03:59">2022-06-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/29/Boltzmann/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/06/29/Boltzmann/" title="无题">无题</a><time datetime="2022-06-29T11:38:58.548Z" title="发表于 2022-06-29 19:38:58">2022-06-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/29/undefined/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/06/29/undefined/" title="无题">无题</a><time datetime="2022-06-29T09:51:58.036Z" title="发表于 2022-06-29 17:51:58">2022-06-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/28/%E7%B3%96%E5%B0%BF%E7%97%85%E9%81%97%E4%BC%A0%E9%A3%8E%E9%99%A9%E6%A3%80%E6%B5%8B%E6%8C%91%E6%88%98%E8%B5%9B/" title="Test"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Test"></a><div class="content"><a class="title" href="/2022/06/28/%E7%B3%96%E5%B0%BF%E7%97%85%E9%81%97%E4%BC%A0%E9%A3%8E%E9%99%A9%E6%A3%80%E6%B5%8B%E6%8C%91%E6%88%98%E8%B5%9B/" title="Test">Test</a><time datetime="2022-06-28T05:33:43.000Z" title="发表于 2022-06-28 13:33:43">2022-06-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/28/%E6%B1%BD%E8%BD%A6%E9%A2%86%E5%9F%9F%E5%A4%9A%E8%AF%AD%E7%A7%8D%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%8C%91%E6%88%98%E8%B5%9B/" title="汽车领域多语种迁移学习"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="汽车领域多语种迁移学习"></a><div class="content"><a class="title" href="/2022/06/28/%E6%B1%BD%E8%BD%A6%E9%A2%86%E5%9F%9F%E5%A4%9A%E8%AF%AD%E7%A7%8D%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%8C%91%E6%88%98%E8%B5%9B/" title="汽车领域多语种迁移学习">汽车领域多语种迁移学习</a><time datetime="2022-06-28T03:00:51.763Z" title="发表于 2022-06-28 11:00:51">2022-06-28</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2022 By yangchang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script src="lucky"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="false" async="async"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
