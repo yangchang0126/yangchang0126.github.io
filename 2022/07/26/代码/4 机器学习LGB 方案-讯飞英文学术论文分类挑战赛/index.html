@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>yangchang's blog | yangchang's blog</title><meta name="author" content="yangchang"><meta name="copyright" content="yangchang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="正文详情目录1 相关信息 2 引言 3 实现 1 相关信息 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–1 赛后总结与分析 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–2 数据分析 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–3 TextCNN Fasttext 方案 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–4 机器学习LGB 方案 【N">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yangchang's blog">
+<meta property="og:url" content="http://github.com/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/index.html">
+<meta property="og:site_name" content="yangchang's blog">
+<meta property="og:description" content="正文详情目录1 相关信息 2 引言 3 实现 1 相关信息 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–1 赛后总结与分析 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–2 数据分析 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–3 TextCNN Fasttext 方案 【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–4 机器学习LGB 方案 【N">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)">
+<meta property="article:published_time" content="2022-07-26T06:01:38.793Z">
+<meta property="article:modified_time" content="2022-07-26T06:01:38.809Z">
+<meta property="article:author" content="yangchang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://github.com/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><meta><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'yangchang\'s blog',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2022-07-26 14:01:38'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: linear-gradient(20deg, #0062be, #925696, #cc426e, #fb0347)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yangchang's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">无题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-26T06:01:38.793Z" title="发表于 2022-07-26 14:01:38">2022-07-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-07-26T06:01:38.809Z" title="更新于 2022-07-26 14:01:38">2022-07-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="正文详情"><a href="#正文详情" class="headerlink" title="正文详情"></a>正文详情</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>1 相关信息</p>
+<p>2 引言</p>
+<p>3 实现</p>
+<h2 id="1-相关信息"><a href="#1-相关信息" class="headerlink" title="1 相关信息"></a>1 相关信息</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399052887">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–1 赛后总结与分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399205096">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–2 数据分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399210271">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–3 TextCNN Fasttext 方案</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399215819">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–4 机器学习LGB 方案</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399367625">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–5 Bert 方案</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/399567990">【NLP】讯飞英文学术论文分类挑战赛Top10开源多方案–6 提分方案</a></li>
+</ul>
+<h2 id="2-引言"><a href="#2-引言" class="headerlink" title="2 引言"></a>2 引言</h2><p><strong>（1）总结</strong><br>机器学习方法在我们的任务中，没有重点研究，仅写出一个简单的baseline，比赛最后的模型融合的部分，使用到，单个LGB模型，没有调参，5折交叉验证，线上都能达到0.79+的成绩，还有很多可提分点，如果时间允许，有很多提分技巧</p>
+<ul>
+<li>XGB模型</li>
+<li>LR模型</li>
+<li>多模型融合EnsembleVoteClassifier</li>
+<li>多模型融合StackingClassifier</li>
+<li>加入伪标签训练</li>
+<li>数据增强</li>
+</ul>
+<p><strong>（2）实现步骤</strong></p>
+<ul>
+<li>数据预处理</li>
+<li>K折划分数据</li>
+<li>TF-IDF提取特征，将单词转为数值矩阵</li>
+<li>训练模型</li>
+<li>每折预测一遍结果求和，最后取K折的结果的平均作为预测矩阵</li>
+<li>np.argmax取得预测值</li>
+<li>生成提交文件</li>
+</ul>
+<h2 id="3-实现"><a href="#3-实现" class="headerlink" title="3 实现"></a>3 实现</h2><p><a href="https://link.zhihu.com/?target=https://github.com/823316627bandeng/Academic-paper-classification/tree/master/Meachine%2520Learning">Github源码下载</a></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line">import pandas as pd</span><br><span class="line">from nltk.stem import WordNetLemmatizer</span><br><span class="line">import re</span><br><span class="line">import nltk</span><br><span class="line">from spacy.lang.en.stop_words import STOP_WORDS</span><br><span class="line">import numpy as np</span><br><span class="line">import lightgbm as lgb</span><br><span class="line">from sklearn import metrics</span><br><span class="line">from sklearn.feature_extraction.text import CountVectorizer</span><br><span class="line">from sklearn.feature_extraction.text import TfidfTransformer</span><br><span class="line">from sklearn.model_selection import KFold, StratifiedKFold</span><br><span class="line"></span><br><span class="line">from sklearn.model_selection import train_test_split</span><br><span class="line"></span><br><span class="line">clean_tag =True</span><br><span class="line">if clean_tag ==True:</span><br><span class="line"> &nbsp; &nbsp;en_stop = set(nltk.corpus.stopwords.words('english'))</span><br><span class="line"> &nbsp; &nbsp;custom_stop_words = [</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;'doi', 'preprint', 'copyright', 'peer', 'reviewed', 'org', 'https', 'et', 'al', 'author', 'figure',</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;'rights', 'reserved', 'permission', 'used', 'using', 'biorxiv', 'medrxiv', 'license', 'fig', 'fig.',</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;'al.', 'elsevier', 'pmc', 'czi', 'www'</span><br><span class="line"> &nbsp; &nbsp;]</span><br><span class="line"> &nbsp; &nbsp;for word in custom_stop_words:</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;en_stop.add(word)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;def preprocess_text(document):</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;stemmer = WordNetLemmatizer()</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = str(document)</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = document.replace("\n", ' ')</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = document.replace("/'", '')</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# Remove &nbsp;all the special characters</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub(r'\W', ' ', document)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 删除所有单个字符</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub(r'\s+[a-zA-Z]\s+', ' ', document)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 从开头删除单个字符</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub(r'\^[a-zA-Z]\s+', ' ', document)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 用单个空格替换多个空格</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub(r'\s+', ' ', document, flags=re.I)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 数字泛化：，所有大于9的数字都被hashs替换了。即成为# #,123变成# # #或15.80€变成# #,# #€。</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub('[0-9]{5,}', '#####', document)</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub('[0-9]{4}', '####', document)</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub('[0-9]{3}', '###', document)</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = re.sub('[0-9]{2}', '##', document)</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 转换为小写</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;document = document.lower()</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 词形还原</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;tokens = document.split()</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;tokens = [stemmer.lemmatize(word) for word in tokens]</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 去停用词</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;tokens = [word for word in tokens if word not in en_stop]</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;# 去低频词</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;tokens = [word for word in tokens if len(word) &gt; 3]</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;preprocessed_text = ' '.join(tokens)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;return preprocessed_text</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;train = pd.read_csv("train/train.csv", sep="\t")</span><br><span class="line"> &nbsp; &nbsp;test = pd.read_csv("test/test.csv", sep="\t")</span><br><span class="line"> &nbsp; &nbsp;sub = pd.read_csv("sample_submit.csv")</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;train["text"] = train["title"] + " " + train["abstract"]</span><br><span class="line"> &nbsp; &nbsp;train["text"] = train["text"].progress_apply(lambda x: preprocess_text(x))</span><br><span class="line"> &nbsp; &nbsp;train.to_csv('ml_train_clean_data.csv', sep='\t')</span><br><span class="line"> &nbsp; &nbsp;test["text"] = test["title"] + " " + test["abstract"]</span><br><span class="line"> &nbsp; &nbsp;test["text"] = test["text"].progress_apply(lambda x: preprocess_text(x))</span><br><span class="line"> &nbsp; &nbsp;test.to_csv('ml_test_clean_data.csv', sep='\t')</span><br><span class="line">else:</span><br><span class="line"> &nbsp; &nbsp;train = pd.read_csv('ml_train_clean_data.csv', sep='\t')</span><br><span class="line"> &nbsp; &nbsp;train = pd.read_csv('ml_test_clean_data.csv', sep='\t')</span><br><span class="line"># 建立映射</span><br><span class="line">label_id2cate = dict(enumerate(train.categories.unique()))</span><br><span class="line">label_cate2id = {value: key for key, value in label_id2cate.items()}</span><br><span class="line">train["label"] = train["categories"].map(label_cate2id)</span><br><span class="line">df = train[["text", "label"]]</span><br><span class="line">df.head()</span><br><span class="line"></span><br><span class="line"># 生成提交文件</span><br><span class="line">def submit_file(result_pred,label_id2cate):#result_pred是预测的结果，应该是10000个值</span><br><span class="line"> &nbsp; &nbsp;print("存储预测结果")</span><br><span class="line"> &nbsp; &nbsp;sub=pd.read_csv('./sample_submit.csv')# 官网给出的格式文件</span><br><span class="line"> &nbsp; &nbsp;sub['categories']=list(result_pred)</span><br><span class="line"> &nbsp; &nbsp;sub['categories']=sub['categories'].map(label_id2cate)</span><br><span class="line"> &nbsp; &nbsp;sub.to_csv('submit/submit_{}_ensemble.csv'.format(models_name), index=False)</span><br><span class="line"></span><br><span class="line"># 5折交叉验证</span><br><span class="line"></span><br><span class="line">params = {</span><br><span class="line"> &nbsp; &nbsp;"device_type": "gpu",</span><br><span class="line"> &nbsp; &nbsp;"max_depth": 5,</span><br><span class="line"> &nbsp; &nbsp;"min_data_in_leaf": 20,</span><br><span class="line"> &nbsp; &nbsp;"num_leaves": 35,</span><br><span class="line"> &nbsp; &nbsp;"learning_rate": 0.1,</span><br><span class="line"> &nbsp; &nbsp;"lambda_l1": 0.1,</span><br><span class="line"> &nbsp; &nbsp;"lambda_l2": 0.2,</span><br><span class="line"> &nbsp; &nbsp;"objective": "multiclass",</span><br><span class="line"> &nbsp; &nbsp;"num_class": 39,</span><br><span class="line"> &nbsp; &nbsp;"verbose": 0,</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">train_data = df["text"]</span><br><span class="line">train_label = df["label"]</span><br><span class="line"></span><br><span class="line">NFOLDS = 5</span><br><span class="line">kfold = StratifiedKFold(n_splits=NFOLDS, shuffle=True, random_state=1)</span><br><span class="line">kf = kfold.split(train_data, train_label)</span><br><span class="line">#StratifiedKFold函数采用分层划分的方法（分层随机抽样思想），验证集中不同类别占比与原始样本的比例保持一致，故StratifiedKFold在做划分的时候需要传入标签特征</span><br><span class="line"></span><br><span class="line">cv_pred = np.zeros(test.shape[0])</span><br><span class="line">valid_best = 0</span><br><span class="line"></span><br><span class="line">for i, (train_fold, validate) in enumerate(kf):</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;# &nbsp; &nbsp; X=train_data.reset_index(drop=True)#reset_index原行索引作为一列保留，列名为index，通过 drop=True 删除原行索引</span><br><span class="line"> &nbsp; &nbsp;# &nbsp; &nbsp; y= train_label.reset_index(drop=True)</span><br><span class="line"> &nbsp; &nbsp;X_train, X_validate, label_train, label_validate = (</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;train_data.iloc[train_fold],</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;train_data.iloc[validate],</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;train_label[train_fold],</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;train_label[validate],</span><br><span class="line"> &nbsp; &nbsp;)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;# 将语料转化为词袋向量，根据词袋向量统计TF-IDF</span><br><span class="line"> &nbsp; &nbsp;vectorizer = CountVectorizer(max_features=50000)</span><br><span class="line"> &nbsp; &nbsp;tf_idf_transformer = TfidfTransformer()</span><br><span class="line"> &nbsp; &nbsp;tf_idf = tf_idf_transformer.fit_transform(vectorizer.fit_transform(X_train))</span><br><span class="line"> &nbsp; &nbsp;X_train_weight = tf_idf.toarray() &nbsp;# 训练集TF-IDF权重矩阵</span><br><span class="line"> &nbsp; &nbsp;tf_idf = tf_idf_transformer.transform(vectorizer.transform(X_validate))</span><br><span class="line"> &nbsp; &nbsp;X_validate_weight = tf_idf.toarray() &nbsp;# 验证集TF-IDF权重矩阵</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;dtrain = lgb.Dataset(X_train_weight, label_train)</span><br><span class="line"> &nbsp; &nbsp;dvalid = lgb.Dataset(X_validate_weight, label_validate, reference=dtrain)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;bst = lgb.train(</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;params,</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;dtrain,</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;num_boost_round=10000,</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;valid_sets=dvalid,</span><br><span class="line"> &nbsp; &nbsp; &nbsp; &nbsp;early_stopping_rounds=500,</span><br><span class="line"> &nbsp; &nbsp;)</span><br><span class="line"></span><br><span class="line"> &nbsp; &nbsp;preds_last = bst.predict(test, num_iteration=bst.best_iteration)</span><br><span class="line"> &nbsp; &nbsp;cv_pred += bst.predict(test, num_iteration=bst.best_iteration)</span><br><span class="line"> &nbsp; &nbsp;valid_best += bst.best_score["valid_0"]["auc"]</span><br><span class="line"></span><br><span class="line">cv_pred /= NFOLDS &nbsp;# 预测输出</span><br><span class="line">valid_best /= NFOLDS</span><br><span class="line">result =np.argmax(cv_pred,axis=1) </span><br><span class="line">submit_file(list(result),label_id2cate)</span><br></pre></td></tr></tbody></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://github.com">yangchang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://github.com/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/">http://github.com/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://github.com" target="_blank">yangchang's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/07/26/%E4%BB%A3%E7%A0%81/3%20TextCNN%20Fasttext%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/"><img class="next-cover" src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">yangchang</div><div class="author-info__description">我把所有不幸当做是一场经历，后来我活的随性洒脱，也终于心无波澜</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" href="https://github.com/yangchang0126"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/yangchang0126" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yangchang0126@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%A3%E6%96%87%E8%AF%A6%E6%83%85"><span class="toc-number">1.</span> <span class="toc-text">正文详情</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF"><span class="toc-number">1.2.</span> <span class="toc-text">1 相关信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%BC%95%E8%A8%80"><span class="toc-number">1.3.</span> <span class="toc-text">2 引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">3 实现</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T06:01:38.793Z" title="发表于 2022-07-26 14:01:38">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/3%20TextCNN%20Fasttext%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/3%20TextCNN%20Fasttext%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T04:50:55.279Z" title="发表于 2022-07-26 12:50:55">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/2%20%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/2%20%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T03:18:42.352Z" title="发表于 2022-07-26 11:18:42">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/1%20%E8%B5%9B%E5%90%8E%E6%80%BB%E7%BB%93%E4%B8%8E%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/1%20%E8%B5%9B%E5%90%8E%E6%80%BB%E7%BB%93%E4%B8%8E%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T02:54:52.168Z" title="发表于 2022-07-26 10:54:52">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/21/Untitled/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/21/Untitled/" title="无题">无题</a><time datetime="2022-07-21T10:38:31.321Z" title="发表于 2022-07-21 18:38:31">2022-07-21</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2022 By yangchang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script src="lucky"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="false" async="async"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
