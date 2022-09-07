@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>yangchang's blog | yangchang's blog</title><meta name="author" content="yangchang"><meta name="copyright" content="yangchang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Heterogeneous Graph Attention Network Metadata * Tags: #Computer-Science—Social-and-Information-Networks * Authors: [[Xiao Wang]], [[Houye Ji]], [[Chuan Shi]], [[Bai Wang]], [[Peng Cui]], [[P. Yu]], [">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yangchang's blog">
+<meta property="og:url" content="http://github.com/2022/07/16/GNN/HAN/index.html">
+<meta property="og:site_name" content="yangchang's blog">
+<meta property="og:description" content="Heterogeneous Graph Attention Network Metadata * Tags: #Computer-Science—Social-and-Information-Networks * Authors: [[Xiao Wang]], [[Houye Ji]], [[Chuan Shi]], [[Bai Wang]], [[Peng Cui]], [[P. Yu]], [">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)">
+<meta property="article:published_time" content="2022-07-16T13:51:49.440Z">
+<meta property="article:modified_time" content="2022-08-19T08:49:22.050Z">
+<meta property="article:author" content="yangchang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://github.com/2022/07/16/GNN/HAN/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><meta><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'yangchang\'s blog',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2022-08-19 16:49:22'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: linear-gradient(20deg, #0062be, #925696, #cc426e, #fb0347)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yangchang's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">无题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-16T13:51:49.440Z" title="发表于 2022-07-16 21:51:49">2022-07-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-08-19T08:49:22.050Z" title="更新于 2022-08-19 16:49:22">2022-08-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Heterogeneous-Graph-Attention-Network"><a href="#Heterogeneous-Graph-Attention-Network" class="headerlink" title="Heterogeneous Graph Attention Network"></a>Heterogeneous Graph Attention Network</h1><ul>
+<li><h3 id="Metadata"><a href="#Metadata" class="headerlink" title="Metadata"></a>Metadata</h3><ul>
+<li><h4 id="Tags-Computer-Science—Social-and-Information-Networks"><a href="#Tags-Computer-Science—Social-and-Information-Networks" class="headerlink" title="* Tags: #Computer-Science—Social-and-Information-Networks"></a>* Tags: #Computer-Science—Social-and-Information-Networks</h4></li>
+<li><h4 id="Authors-Xiao-Wang-Houye-Ji-Chuan-Shi-Bai-Wang-Peng-Cui-P-Yu-Yanfang-Ye"><a href="#Authors-Xiao-Wang-Houye-Ji-Chuan-Shi-Bai-Wang-Peng-Cui-P-Yu-Yanfang-Ye" class="headerlink" title="* Authors: [[Xiao Wang]], [[Houye Ji]], [[Chuan Shi]], [[Bai Wang]], [[Peng Cui]], [[P. Yu]], [[Yanfang Ye]]"></a>* Authors: [[Xiao Wang]], [[Houye Ji]], [[Chuan Shi]], [[Bai Wang]], [[Peng Cui]], [[P. Yu]], [[Yanfang Ye]]</h4></li>
+</ul>
+</li>
+<li><h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2></li>
+</ul>
+<p>Graph neural network, as a powerful graph representation technique based on deep learning, has shown superior performance and attracted considerable research interest. However, it has not been fully considered in graph neural network for heterogeneous graph which contains different types of nodes and links. The heterogeneity and rich semantic information bring great challenges for designing a graph neural network for heterogeneous graph. Recently, one of the most exciting advancements in deep learning is the attention mechanism, whose great potential has been well demonstrated in various areas. In this paper, we ﬁrst propose a novel heterogeneous graph neural network based on the hierarchical attention, including node-level and semantic-level attentions. Speciﬁcally, ==the node-level attention aims to learn the importance between a node and its metapath based neighbors==, while ==the semantic-level attention is able to learn the importance of different meta-paths==. With the learned importance from both node-level and semantic-level attention, the importance of node and meta-path can be fully considered. Then the proposed model can generate node embedding by aggregating features from meta-path based neighbors in a hierarchical manner. Extensive experimental results on three real-world heterogeneous graphs not only show the superior performance of our proposed model over the state-of-the-arts, but also demonstrate its potentially good interpretability for graph analysis.</p>
+<ul>
+<li><h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><p>节点注意力学习节点和基于元路径的邻居之间的重要性</p>
+<p>语义注意力学习不同元路径之间的重要性</p>
+<p><img src="https://s2.loli.net/2022/07/20/CufioWpBAyHslOd.png" alt="image-20220720091159763"></p>
+<ul>
+<li><p>异构图（b）：一个异构图，表示为 $G=(V,E)$ ，由一个对象集 V 和连接集 E 组成。异类图还与节点类型映射函数  $\phi:V-&gt;A$和连接类型映射函数 $\psi:E-&gt;B$ 相关联。A和 B 表示预定义对象类型和连接类型的集合，其中$| A |+| B |&gt;2$(节点对应的类别和边对应的类别之和要大于2)</p>
+</li>
+<li><p>元路径（c）：连接两个对象之间的复合关系，不同元路径揭示不同语义（m<del>1</del> -&gt;a<del>1</del> -&gt;m<del>2</del>）在给定元路径的情况下，每个节点存在一组基于元路径的邻居，可以在异构图中显示不同的结构信息和丰富的语义</p>
+</li>
+<li><p>基于元路径的邻居（d）：在元路径m<del>1</del> -&gt;a<del>1</del> -&gt;m<del>2</del> 中m<del>1</del> 和 m<del>2</del> 就是邻居关系，在（b）异构图中基于元路径m-&gt;a-&gt;m的邻居为：m<del>1</del> m<del>2</del> m<del>3</del> (节点的邻居包括自身)</p>
+<p><img src="https://s2.loli.net/2022/07/20/dQMl5o8tV6mKueF.png" alt="image-20220720094455151"></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>模型部分：</p>
+<p>（节点注意力就是把邻居根据attention聚合起来）</p>
+<p>（语义注意力就是把同一节点的不同mate-path的结果根据attention聚合起来）</p>
+<p>==节点注意力来学习基于元路径的邻居的权重==，对其进行聚合得到node embedding，在此基础上，通过==语义注意力学到元路径的差异==，得到特定任务的语义的embedding</p>
+<p><img src="https://s2.loli.net/2022/07/28/kE6BoLAX8GIbexq.png" alt="image-20220728144938215"></p>
+<p>先把异构图根据指定的meta-path转换成同构图</p>
+<ul>
+<li><p>节点级注意力</p>
+<p><img src="https://s2.loli.net/2022/07/20/h4Dgz9ZURm2tMoG.png" width="20%" alt="***" align="left"> ——投影函数：将节点映射到同一维度（h<del>i</del> 是原始特征）</p>
+<p>​        之后利用自注意力学习各节点之间的权重</p>
+<p><img src="https://s2.loli.net/2022/07/20/OpkdJGI4hF3LTMS.png" width="30%" alt="***" align="left">——基于元路径$\phi$节点对（i,j）j对i的重要性（==attention==）</p>
+<p>​       通过mask attention只计算$e_{ij}^{\phi}$,也就是i和基于元路径的邻居节点的注意力</p>
+<p><img src="https://s2.loli.net/2022/07/20/2EKY7UbqHioX4Gr.png" width="50%" alt="***" align="left">——==attention系数==</p>
+<p>  ——<img src="https://s2.loli.net/2022/07/20/LUsEfQFmkIBSwAY.png" width="20%" alt="***" align="left">节点i基于元路径$\phi$学习到的embedding，</p>
+<p>​         由于异构图具有无标度特性，因此图数据的方差很大</p>
+<p><img src="https://s2.loli.net/2022/07/20/eO3lCS9FuBIrV2k.png" width="30%" alt="***" align="left">——拓展到了多头注意力，就是将注意力重复k次再把得到的embedding拼接在一起</p>
+<p>故给定一个元路径集合${\phi_1,\phi_2,…,\phi_p}$,把节点特征输入给节点注意力，会得到p组语义节点embedding ${Z_{\phi_1},Z{\phi_2},…,Z{\phi_p}}$</p>
+</li>
+<li><p>语义级注意力</p>
+<p>将节点级注意力学习到的p组语义节点embedding ${Z_{\phi_1},Z{\phi_2},…,Z{\phi_p}}$作为输入到语义级注意力att<del>sem</del>中，学习到每个元路径的权重$(\beta_{\phi_1},\beta_{\phi_2},…,\beta_{\phi_p})$</p>
+<img src="https://s2.loli.net/2022/07/20/xhXVIyYE1WNno7Z.png" alt="image-20220720105529297" style="zoom:50%;">
+
+<p>$att_{sem}$的attention为:</p>
+<center class="half">
+<img src="https://s2.loli.net/2022/07/20/EhZ4CkYMIjTBs3J.png" width="60%" alt="***" align="left">
+<img src="https://s2.loli.net/2022/07/20/ClMSfrxUXaEtqcN.png" width="40%" alt="***" align="right">
+<center>
+
+
+
+
+
+<ol>
+<li>首先通过一个非线性变换（MLP）变换语义节点embedding，</li>
+<li>利用语义级注意力向量q与非线性变换后的embedding相似性（内积），来测量语义节点embedding的重要性</li>
+<li>进一步平均了所有语义节点embedding的重要性，可以解释为每个元路径的重要性。故每个元路径的重要性，记为 $w_{\phi_i}$</li>
+<li>最后通过softmax对其进行归一化(注意力系数)，可以解释为元路径$\phi_i$对特定任务的贡献</li>
+</ol>
+</center></center></li>
+</ul>
+<p>最后的embedding表示为：<img src="https://s2.loli.net/2022/07/20/9rcIe1dLTuWjDlt.png" alt="image-20220720111426066" style="zoom:50%;"></p>
+<p>然后我们可以将最终的嵌入应用到特定的任务中，并设计不同的损失函数。对于半监督节点分类，我们可以最小化有类标签节点的预测类标签分布与真实类标签的交叉熵：<img src="https://s2.loli.net/2022/07/20/vAKmTcz2fXRdLWj.png" alt="image-20220720111603786" style="zoom: 67%;">$y_l$是有标签的节点索引集，$Y^l$和$Z^l$是有标签节点的标签和嵌入</p>
+<p><img src="https://s2.loli.net/2022/07/20/S1xMk3K5FG9npo8.png" alt="image-20220720112035143"></p>
+<p><img src="https://s2.loli.net/2022/07/20/FApWGfTrNM3KeLi.png" alt="image-20220720112753718"></p>
+<h3 id="实验部分"><a href="#实验部分" class="headerlink" title="实验部分"></a>实验部分</h3><p><img src="https://s2.loli.net/2022/08/19/QT3KC8VaJloMkgz.png" alt="image-20220819164013014"></p>
+<p><strong>DBLP的子集</strong>：其中包含14328篇论文（P），4057个作者（A），20个会议（C），8789项（T）。作者分为四个领域：数据库，数据挖掘，机器学习，信息检索。另外，我们根据他们提交的会议标记每个作者的研究领域。作者功能是由关键字代表的单词袋的元素。在这里，我们使用元路径集=={APA，APCPA，APTPA}==执行实验</p>
+<p><strong>ACM：</strong>在KDD，Sigmod，Sigcomm，Mobicomm和VLDB中发表的论文，并将论文分为三类（数据库，无线通信，数据挖掘）。然后，我们构建了一个异质图，该图包括3025篇论文（P），5835个作者（A）和56个主题（S）。论文特征对应于用关键字词袋表示的元素。我们使用元路径集=={PAP，PSP}==进行实验。在这里，我们根据他们发布的会议标记论文。</p>
+<p><strong>IMDB：</strong>其中包含4780部电影（M），5841个演员（A）和2269名导演（D）。这些电影根据他们的类型分为三个班级（动作，喜剧，戏剧）。电影特征对应于代表情节的词袋的元素。我们使用元路径集=={MAM，MDM==}执行实验</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://github.com">yangchang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://github.com/2022/07/16/GNN/HAN/">http://github.com/2022/07/16/GNN/HAN/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://github.com" target="_blank">yangchang's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/07/20/%E4%BB%A3%E7%A0%81/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/"><img class="prev-cover" src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">生成模型</div></div></a></div><div class="next-post pull-right"><a href="/2022/07/16/GNN/pyG/"><img class="next-cover" src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">pyG</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">yangchang</div><div class="author-info__description">我把所有不幸当做是一场经历，后来我活的随性洒脱，也终于心无波澜</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" href="https://github.com/yangchang0126"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/yangchang0126" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yangchang0126@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Heterogeneous-Graph-Attention-Network"><span class="toc-number">1.</span> <span class="toc-text">Heterogeneous Graph Attention Network</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Metadata"><span class="toc-number">1.0.1.</span> <span class="toc-text">Metadata</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Tags-Computer-Science%E2%80%94Social-and-Information-Networks"><span class="toc-number">1.0.1.1.</span> <span class="toc-text">* Tags: #Computer-Science—Social-and-Information-Networks</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Authors-Xiao-Wang-Houye-Ji-Chuan-Shi-Bai-Wang-Peng-Cui-P-Yu-Yanfang-Ye"><span class="toc-number">1.0.1.2.</span> <span class="toc-text">* Authors: [[Xiao Wang]], [[Houye Ji]], [[Chuan Shi]], [[Bai Wang]], [[Peng Cui]], [[P. Yu]], [[Yanfang Ye]]</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstract"><span class="toc-number">1.1.</span> <span class="toc-text">Abstract</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%94%E8%AE%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">笔记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E9%83%A8%E5%88%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">实验部分</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/4%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0LGB%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T06:01:38.793Z" title="发表于 2022-07-26 14:01:38">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/3%20TextCNN%20Fasttext%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/3%20TextCNN%20Fasttext%20%E6%96%B9%E6%A1%88-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T04:50:55.279Z" title="发表于 2022-07-26 12:50:55">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/2%20%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/2%20%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T03:18:42.352Z" title="发表于 2022-07-26 11:18:42">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/26/%E4%BB%A3%E7%A0%81/1%20%E8%B5%9B%E5%90%8E%E6%80%BB%E7%BB%93%E4%B8%8E%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/26/%E4%BB%A3%E7%A0%81/1%20%E8%B5%9B%E5%90%8E%E6%80%BB%E7%BB%93%E4%B8%8E%E5%88%86%E6%9E%90-%E8%AE%AF%E9%A3%9E%E8%8B%B1%E6%96%87%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87%E5%88%86%E7%B1%BB%E6%8C%91%E6%88%98%E8%B5%9B/" title="无题">无题</a><time datetime="2022-07-26T02:54:52.168Z" title="发表于 2022-07-26 10:54:52">2022-07-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/21/%E4%BB%A3%E7%A0%81/Untitled/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/07/21/%E4%BB%A3%E7%A0%81/Untitled/" title="无题">无题</a><time datetime="2022-07-21T10:38:31.321Z" title="发表于 2022-07-21 18:38:31">2022-07-21</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2022 By yangchang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script src="lucky"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="false" async="async"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
