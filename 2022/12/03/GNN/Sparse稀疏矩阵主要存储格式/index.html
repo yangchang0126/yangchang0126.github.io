@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>yangchang's blog | yangchang's blog</title><meta name="author" content="yangchang"><meta name="copyright" content="yangchang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Sparse稀疏矩阵主要存储格式 csc_matrix: Compressed Sparse Column format csr_matrix: Compressed Sparse Row format bsr_matrix: Block Sparse Row format lil_matrix: List of Lists format dok_matrix: Dictionary of Key">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yangchang's blog">
+<meta property="og:url" content="http://github.com/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="yangchang's blog">
+<meta property="og:description" content="Sparse稀疏矩阵主要存储格式 csc_matrix: Compressed Sparse Column format csr_matrix: Compressed Sparse Row format bsr_matrix: Block Sparse Row format lil_matrix: List of Lists format dok_matrix: Dictionary of Key">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)">
+<meta property="article:published_time" content="2022-12-03T07:08:48.899Z">
+<meta property="article:modified_time" content="2022-12-03T07:41:14.402Z">
+<meta property="article:author" content="yangchang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://github.com/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://github.com/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><meta><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'yangchang\'s blog',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2022-12-03 15:41:14'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: linear-gradient(20deg, #0062be, #925696, #cc426e, #fb0347)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yangchang's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">无题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-12-03T07:08:48.899Z" title="发表于 2022-12-03 15:08:48">2022-12-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-12-03T07:41:14.402Z" title="更新于 2022-12-03 15:41:14">2022-12-03</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Sparse稀疏矩阵主要存储格式"><a href="#Sparse稀疏矩阵主要存储格式" class="headerlink" title="Sparse稀疏矩阵主要存储格式"></a>Sparse稀疏矩阵主要存储格式</h1><ol>
+<li>csc_matrix: Compressed Sparse Column format</li>
+<li>csr_matrix: Compressed Sparse Row format</li>
+<li>bsr_matrix: Block Sparse Row format</li>
+<li>lil_matrix: List of Lists format</li>
+<li>dok_matrix: Dictionary of Keys format</li>
+<li>coo_matrix: COOrdinate format (aka IJV, triplet format)</li>
+<li>dia_matrix: DIAgonal format</li>
+<li>spmatrix: Sparse matrix base clas</li>
+</ol>
+<h3 id="一些属性和通用格式"><a href="#一些属性和通用格式" class="headerlink" title="一些属性和通用格式"></a>一些属性和通用格式</h3><figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">mat.shape<span class="comment">#矩阵形状</span></span><br><span class="line">mat.dtype<span class="comment">#数据类型</span></span><br><span class="line">mat.ndim <span class="comment">#矩阵维度</span></span><br><span class="line">mat.nnz  <span class="comment">#非零个数</span></span><br><span class="line">mat.data <span class="comment">#非零值，一维数据</span></span><br><span class="line"><span class="comment">###coo特有的</span></span><br><span class="line">coo.row  <span class="comment">#矩阵行索引</span></span><br><span class="line">coo.col  <span class="comment">#矩阵列索引</span></span><br><span class="line"><span class="comment">###CSR\CSC\BSR特有的</span></span><br><span class="line">bsr.indices<span class="comment">#索引数组</span></span><br><span class="line">bsr.indptr <span class="comment">#指针数组</span></span><br><span class="line">bsr.has_sortedd_indices <span class="comment">#索引是否排序</span></span><br><span class="line">bsr.blocksize <span class="comment">#BSR矩阵块大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#####通用方法</span></span><br><span class="line"><span class="keyword">import</span> scipy.sparse <span class="keyword">as</span> sp</span><br><span class="line"><span class="comment">### 转换矩阵格式</span></span><br><span class="line">tobsr()、tocsr()、to_csc()、to_dia()、to_dok()、to_lil()</span><br><span class="line">mat.toarray()</span><br><span class="line">mat.todense()</span><br><span class="line">mat.asformat(<span class="built_in">format</span>)<span class="comment">#返回给定格式的稀疏矩阵</span></span><br><span class="line">mat.astype(t)<span class="comment">#返回给定元素格式的稀疏矩阵</span></span><br><span class="line"><span class="comment">###检查矩阵格式</span></span><br><span class="line">issparse isspmatrix_lil isspmatrix_csc isspmatrix_csr</span><br><span class="line">sp.issparse(mat)</span><br><span class="line"><span class="comment">###获取矩阵数据</span></span><br><span class="line">mat.getcol(j) <span class="comment">#返回矩阵列j的一个拷贝，作为一个(m x 1) 稀疏矩阵 (列向量)</span></span><br><span class="line">mat.getrow(i) <span class="comment">#返回矩阵行i的一个拷贝，作为一个（1 * n）稀疏矩阵</span></span><br><span class="line">mat.nonzero() <span class="comment">#非0元索引</span></span><br><span class="line">mat.diagonal()<span class="comment">#返回矩阵主对角元素</span></span><br><span class="line">mat.<span class="built_in">max</span>([axis])<span class="comment">#给定轴的矩阵最大元素</span></span><br><span class="line"><span class="comment">###矩阵运算</span></span><br><span class="line">mat += mat </span><br><span class="line">mat = mat*<span class="number">5</span></span><br><span class="line">mat.dot(other)<span class="comment">#坐标点乘</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="Coordinate-Matrix-对角存储矩阵"><a href="#Coordinate-Matrix-对角存储矩阵" class="headerlink" title="Coordinate Matrix 对角存储矩阵"></a>Coordinate Matrix 对角存储矩阵</h3><p>采用三元组(<code>row</code>, <code>col</code>, <code>data</code>)(或称为ijv format)的形式来存储矩阵中非零元素的信息<br>三个数组 <code>row</code> 、<code>col</code> 和 <code>data</code> 分别保存非零元素的行下标、列下标与值（一般长度相同）<br>故 coo[row[k]][col[k]] = data[k] ，即矩阵的第 row[k] 行、第 col[k] 列的值为 data[k]<img src="https://pic1.zhimg.com/v2-0e24a642bfd95d61e5f0e8ce7b5b167c_b.webp" alt="动图"></p>
+<p>当 <code>row[0] = 1</code> , <code>column[0] = 1</code> 时， <code>data[0] = 2</code> ，故 <code>coo[1][1] = 2</code></p>
+<ul>
+<li>主要用来创建矩阵，因为coo_matrix无法对矩阵的元素进行增删改等操作</li>
+<li>一旦创建之后，除了将之转换成其它格式的矩阵，几乎无法对其做任何操作和矩阵运算</li>
+</ul>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">coo_matrix(D)<span class="comment">#密集矩阵</span></span><br><span class="line">coo_matrix(S)<span class="comment">#其他类型的稀疏矩阵</span></span><br><span class="line">coo_matrix((M,N),[dtype])<span class="comment">#构建一个shape为M*N的空矩阵，默认数据类型是d</span></span><br><span class="line">coo_matrix((data,(i,j)),[shape=(M,N)])<span class="comment">#三元组初始化，i[:]:行索引,j[:]:列索引 A[i[k], j[k]]=data[k]</span></span><br><span class="line"><span class="comment"># 查看数据</span></span><br><span class="line">coo.data</span><br><span class="line">coo.row</span><br><span class="line">coo.col</span><br></pre></td></tr></tbody></table></figure>
+
+<p>优点：</p>
+<ul>
+<li>转换成其他存储格式很便捷，能和CSR/CSC格式的快速转换，允许重复的索引（例如在1行1列处存了值2.0，又在1行1列处存了值3.0，则转换成其它矩阵时就是2.0+3.0=5.0）</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>不支持切片和算术运算</li>
+<li>如果稀疏矩阵只包含非零的对角元素，使用对角存储（DIA）更好</li>
+</ul>
+<h3 id="Compressed-Sparse-Row-Matrix-压缩稀疏行格式"><a href="#Compressed-Sparse-Row-Matrix-压缩稀疏行格式" class="headerlink" title="Compressed Sparse Row Matrix 压缩稀疏行格式"></a>Compressed Sparse Row Matrix 压缩稀疏行格式</h3><p><code>csr_matrix</code>是按行对矩阵进行压缩的</p>
+<p>通过<code>indices</code>，<code>indptr</code>，<code>data</code>来确定矩阵</p>
+<p><code>data</code>表示矩阵中的非零数据</p>
+<p>对于第i行而言，该行中非零元素的列索引为<code>indices[indptr[i]:indptr[i+1]]</code></p>
+<p>可以将<code>indptr</code>理解成利用其自身索引</p>
+<p><img src="/home/yangchang/%E4%B8%8B%E8%BD%BD/62c92320-23cb-11eb-b89e-32690a56e4fd.gif" alt="62c92320-23cb-11eb-b89e-32690a56e4fd"></p>
+<p>Index Pointers表示该行有几个非零元素，indices表示该行非零元素列的索引，data和indices对应，表示列索引对应的值</p>
+<p><img src="/home/yangchang/.config/Typora/typora-user-images/image-20221203140226617.png" alt="image-20221203140226617"></p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">csr_matrix(D)</span><br><span class="line">csr_matrix(S)</span><br><span class="line">csr_matrix((M,N),[dtype])<span class="comment">#构建空矩阵</span></span><br><span class="line">csr_matrix((data,(row_ind,col_ind)),[shape=(M,N)])<span class="comment">#a[row_ind[k], col_ind[k]] = data[k]</span></span><br><span class="line">csr_matri((data,indices,indptr),[shape=(M,N)])<span class="comment">#数据，列索引，第i行列索引的值</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">data ：稀疏矩阵存储的值，一维数组</span></span><br><span class="line"><span class="string">indices ：存储矩阵有有非零值的列索引</span></span><br><span class="line"><span class="string">indptr ：类似指向列索引的指针数组,索引表示该行有几个非零值</span></span><br><span class="line"><span class="string">'''</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>优点：</p>
+<ul>
+<li>稀疏矩阵算术运算很高效</li>
+<li>行切片高效</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>列切片慢（CSC）</li>
+<li>转换到稀疏结构代价高（LIL，DOK）</li>
+</ul>
+<h3 id="Compressed-Sparse-Column-Matrix-压缩稀疏列矩阵"><a href="#Compressed-Sparse-Column-Matrix-压缩稀疏列矩阵" class="headerlink" title="Compressed Sparse Column Matrix 压缩稀疏列矩阵"></a>Compressed Sparse Column Matrix 压缩稀疏列矩阵</h3><p><img src="/home/yangchang/%E4%B8%8B%E8%BD%BD/17ce6ebc-232f-11eb-8376-cadbb0a08063-_1_.gif" alt="17ce6ebc-232f-11eb-8376-cadbb0a08063-_1_"></p>
+<p>和CSR类似，不过他都是行索引</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#构建矩阵</span><br><span class="line">row = np.array([0,2,2,0,1,2])</span><br><span class="line">col = np.array([0,0,1,2,2,2])</span><br><span class="line">data = np.array([1,2,3,4,5,6])</span><br><span class="line">csc = sparse.csc_metrix((data,(row,col)),shape=(3,3)).toarray()#这样构建表示行列索引对应的值</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="Block-Sparse-Row-Matrix-分块压缩稀疏行格式"><a href="#Block-Sparse-Row-Matrix-分块压缩稀疏行格式" class="headerlink" title="Block Sparse Row Matrix 分块压缩稀疏行格式"></a>Block Sparse Row Matrix 分块压缩稀疏行格式</h3><p>基于行的块压缩，与CSR类似，都是通过data，indices，indptr来确定矩阵，只是data中的数据从数变成了一个矩阵</p>
+<ul>
+<li><p>块大小 <code>blocksize</code></p>
+</li>
+<li><ul>
+<li>块大小 <code>(R, C)</code> 必须均匀划分矩阵 <code>(M, N)</code> 的形状。</li>
+<li>R和C必须满足关系：<code>M % R = 0</code> 和 <code>N % C = 0</code></li>
+</ul>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://github.com">yangchang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://github.com/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/">http://github.com/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://github.com" target="_blank">yangchang's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/12/03/GNN/GCN%E4%BB%A3%E7%A0%81/"><img class="next-cover" src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">GCN代码</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">yangchang</div><div class="author-info__description">我把所有不幸当做是一场经历，后来我活的随性洒脱，也终于心无波澜</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" href="https://github.com/yangchang0126"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/yangchang0126" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yangchang0126@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">Sparse稀疏矩阵主要存储格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%B1%9E%E6%80%A7%E5%92%8C%E9%80%9A%E7%94%A8%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.0.1.</span> <span class="toc-text">一些属性和通用格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Coordinate-Matrix-%E5%AF%B9%E8%A7%92%E5%AD%98%E5%82%A8%E7%9F%A9%E9%98%B5"><span class="toc-number">1.0.2.</span> <span class="toc-text">Coordinate Matrix 对角存储矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compressed-Sparse-Row-Matrix-%E5%8E%8B%E7%BC%A9%E7%A8%80%E7%96%8F%E8%A1%8C%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.0.3.</span> <span class="toc-text">Compressed Sparse Row Matrix 压缩稀疏行格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compressed-Sparse-Column-Matrix-%E5%8E%8B%E7%BC%A9%E7%A8%80%E7%96%8F%E5%88%97%E7%9F%A9%E9%98%B5"><span class="toc-number">1.0.4.</span> <span class="toc-text">Compressed Sparse Column Matrix 压缩稀疏列矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Block-Sparse-Row-Matrix-%E5%88%86%E5%9D%97%E5%8E%8B%E7%BC%A9%E7%A8%80%E7%96%8F%E8%A1%8C%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.0.5.</span> <span class="toc-text">Block Sparse Row Matrix 分块压缩稀疏行格式</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/" title="无题"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"></a><div class="content"><a class="title" href="/2022/12/03/GNN/Sparse%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E4%B8%BB%E8%A6%81%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/" title="无题">无题</a><time datetime="2022-12-03T07:08:48.899Z" title="发表于 2022-12-03 15:08:48">2022-12-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/03/GNN/GCN%E4%BB%A3%E7%A0%81/" title="GCN代码"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GCN代码"></a><div class="content"><a class="title" href="/2022/12/03/GNN/GCN%E4%BB%A3%E7%A0%81/" title="GCN代码">GCN代码</a><time datetime="2022-12-03T01:47:25.000Z" title="发表于 2022-12-03 09:47:25">2022-12-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/10/23/knowledge/ONNX%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B/" title="ONNX部署模型"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ONNX部署模型"></a><div class="content"><a class="title" href="/2022/10/23/knowledge/ONNX%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B/" title="ONNX部署模型">ONNX部署模型</a><time datetime="2022-10-23T11:20:49.000Z" title="发表于 2022-10-23 19:20:49">2022-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/10/21/%E4%BB%A3%E7%A0%81/CNN%E7%9A%84feature%20map%E5%92%8Ckernel%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96/" title="CNN的feature map和kernel的可视化"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CNN的feature map和kernel的可视化"></a><div class="content"><a class="title" href="/2022/10/21/%E4%BB%A3%E7%A0%81/CNN%E7%9A%84feature%20map%E5%92%8Ckernel%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96/" title="CNN的feature map和kernel的可视化">CNN的feature map和kernel的可视化</a><time datetime="2022-10-21T05:16:26.000Z" title="发表于 2022-10-21 13:16:26">2022-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/10/20/knowledge/RNN%E3%80%81CNN%E5%8F%98%E4%BD%93/" title="RNN、CNN变体"><img src="/linear-gradient(20deg,%20#0062be,%20#925696,%20#cc426e,%20#fb0347)" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RNN、CNN变体"></a><div class="content"><a class="title" href="/2022/10/20/knowledge/RNN%E3%80%81CNN%E5%8F%98%E4%BD%93/" title="RNN、CNN变体">RNN、CNN变体</a><time datetime="2022-10-20T07:55:51.000Z" title="发表于 2022-10-20 15:55:51">2022-10-20</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2023 By yangchang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script src="lucky"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="false" async="async"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
