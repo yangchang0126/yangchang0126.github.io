@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>GMIN思路 | yangchang's blog</title><meta name="keywords" content="rumor"><meta name="author" content="yangchang"><meta name="copyright" content="yangchang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="梯度累积就是，每次获取1个batch的数据，计算1次梯度，此时梯度不清空，不断累积，累积一定次数后，根据累积的梯度更新网络参数，然后清空所有梯度信息，进行下一次循环。 a）直接截断：从长文本中截取一部分，具体截取哪些片段需要观察数据，如新闻数据一般第一段比较重要就可以截取前边部分； b）抽取重要片段：抽取长文本的关键句子作为摘要，然后进入BERT； c）分段：把长文本分成几段，每段经过BERT之">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GMIN思路">
+<meta property="og:url" content="http://github.com/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="yangchang's blog">
+<meta property="og:description" content="梯度累积就是，每次获取1个batch的数据，计算1次梯度，此时梯度不清空，不断累积，累积一定次数后，根据累积的梯度更新网络参数，然后清空所有梯度信息，进行下一次循环。 a）直接截断：从长文本中截取一部分，具体截取哪些片段需要观察数据，如新闻数据一般第一段比较重要就可以截取前边部分； b）抽取重要片段：抽取长文本的关键句子作为摘要，然后进入BERT； c）分段：把长文本分成几段，每段经过BERT之">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg">
+<meta property="article:published_time" content="2023-02-27T11:53:45.000Z">
+<meta property="article:modified_time" content="2023-02-27T12:00:07.496Z">
+<meta property="article:author" content="yangchang">
+<meta property="article:tag" content="rumor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://github.com/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><meta><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GMIN思路',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2023-02-27 20:00:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yangchang's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">GMIN思路</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-02-27T11:53:45.000Z" title="发表于 2023-02-27 19:53:45">2023-02-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-02-27T12:00:07.496Z" title="更新于 2023-02-27 20:00:07">2023-02-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/rumor/">rumor</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="GMIN思路"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg');"></div><article class="post-content" id="article-container"><p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230109113321781.png" alt="image-20230109113321781"></p>
+<p>梯度累积就是，每次获取1个batch的数据，计算1次梯度，此时梯度不清空，不断累积，累积一定次数后，根据累积的梯度更新网络参数，然后清空所有梯度信息，进行下一次循环。</p>
+<p><strong>a）直接截断：</strong>从长文本中截取一部分，具体截取哪些片段需要观察数据，如新闻数据一般第一段比较重要就可以截取前边部分；</p>
+<p><strong>b）抽取重要片段：</strong>抽取长文本的关键句子作为摘要，然后进入BERT；</p>
+<p><strong>c）分段：</strong>把长文本分成几段，每段经过BERT之后再进行拼接或求平均或者接入其他网络如lstm</p>
+<p>评论还得有个预处理筛选——或者用什么排序算法</p>
+<p>对于得到的文本表示，可以只取cls的值也可以所有位置的平均</p>
+<p>join论文用的是cnn+maxpooling，在对结果做多头注意力</p>
+<p>GCAN论文只用到了原文内容，用的是GRU</p>
+<p>POSCOM是评论和原文构建图，通过两层GCN结果过自注意力，再和原文做coattention，同时对评论做了cnn，拼在一起过分类器</p>
+<p>MaJing的那个CHGAN模型先把评论和原文经过BILSTM得到embedding，过一个自注意力根据转发路径构建无向的图，把评论和原文用个门控机制（就是把原文以门控的概率加到评论里面）来考虑原文的重要性然后和原来的拼起来，更新后的原文评论过一个注意力机制经过GAT，最后不用GAT里的meanpooling，将隐状态表示通过三种机制拼在一起，送到分类器里——（majing的每个论文都用个门控处理原文和评论？）<img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230110113253739.png" alt="image-20230110113253739"></p>
+<p>评论过全连接</p>
+<p>评论过lstm</p>
+<p>评论用attention</p>
+<p>评论信息直接相加取平均</p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230109222153222.png" alt="image-20230109222153222"></p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230109233545494.png" alt="image-20230109233545494"></p>
+<p>卷积的数据输入格式：[*<em>batch_size,in_channels,*<em>height*</em>,width</em>*]，如果是一维卷积，则只输入width，即只在宽度方向上卷积。</p>
+<h3 id="defend架构"><a href="#defend架构" class="headerlink" title="defend架构"></a>defend架构</h3><h4 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h4><p>首先，新闻内容编码器组件通过分层的词级和句子级编码描述了从新闻语言特征到潜在特征空间的建模；接下来，用户评论编码器组件说明了通过词级注意力网络提取评论潜在特征；然后，句子评论共同注意组件对新闻句子和用户评论之间的相互影响进行建模以学习特征表示，并通过共同注意学习中的注意力权重来学习句子和评论的可解释性程度；最后，假新闻预测组件显示了连接新闻内容和用户评论特征以进行假新闻分类的过程。</p>
+<p>首先是content encoder 包括word encoder（BiGRU捕捉上下文信息，并非所有单词都对句子含义的表示有相同的贡献，引入attention学习单词的重要性） 和sentence encoder（利用BiGRU对句子）</p>
+<p>然后是comment encoder(BiGCN+attention)</p>
+<p>然后是sentence-comment co-attention（对于得到的sentence和comment求coattention）</p>
+<h4 id="join架构"><a href="#join架构" class="headerlink" title="join架构"></a>join架构</h4><p>我们首先通过将相关转推的语义信息与注意力机制融合，为每个源推文生成更好的综合表示。然后，我们将所有源推文、转推和用户之间的全局关系建模为异构图，以捕获用于谣言检测的丰富结构信息</p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230128095428589.png" alt="image-20230128095428589"></p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p>对content和comment用bert做encoding，</p>
+<p>分别做自注意力</p>
+<p>对评论做textcnn</p>
+<p>对content做BiGRU和attention——sentence encoder——x1——attention——xa#原来代码的意思是想对原文的每句话做encoder，但我这里没对content分句</p>
+<p>对comment做BiGRU和attention——comment encoder——x2——attention——xc</p>
+<p>再把content做BiGRU——xa——content encoder——x3</p>
+<p>xa,x3——coattention</p>
+<h4 id="目前代码"><a href="#目前代码" class="headerlink" title="目前代码"></a>目前代码</h4><figure class="highlight text"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m torch.distributed.launch --nproc_per_node=2 test_bertfp16.py</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>word embedding</code>:<code>bert</code></p>
+<p>对于原文：<code>self-attention</code>+<code>BiGRU</code>+<code>attention</code></p>
+<p>对于评论：<code>self-attention</code>+<code>textcnn</code>+<code>BiGRU</code>+<code>attention</code></p>
+<p>原文评论：<code>co-attention</code></p>
+<p>还有用户与原文的图的关系——处理数据的时候要把id加进去</p>
+<p><strong>看哪个方法好（我感觉join的那个也挺好有个门控可以解释成原文和评论的相互强化或解释）</strong></p>
+<p>join这里对文本的处理是源推文和评论过注意力，把注意力和源推文的表示拼在一起过一个全连接层过一个softmax，得到注意力和源推文的权重，也就是用一个门控的机制，最后得到结合源推文和评论的表示（这里没有直接将源推文加到结合了评论的注意力表示中，而是学习了一个权重表示他俩的重要性）</p>
+<p>而defend是对原文和评论分别过GRU，并且过两个非线性层（也就是他说的注意力$ait = softmax( W1 * tanh(W<em>h + b ))$,，得到的结果和上一步的结果相乘）——*<em>用senet的方法解释</em></em></p>
+<p>传播结构</p>
+<h3 id="文本匹配任务"><a href="#文本匹配任务" class="headerlink" title="文本匹配任务"></a>文本匹配任务</h3><p><strong>加进来了SBERT进行相似度匹配来对评论信息进行语义相关性排序</strong></p>
+<p>用聚类、k近邻c近邻、LSH局部敏感哈希等</p>
+<ol>
+<li>文本信息+路径信息——BiGCN有weibo、twitter1516的路径信息——用这个可以看BIGCN对树结构建模然后换一个GNN</li>
+<li>文本信息+用户信息——stacking有weibo和weibo20的用户信息——用这个可以借鉴GCAN对用户信息构件图建模</li>
+<li>文本信息+异构信息——把join里的用户和推文之间的图数据拿进来有weibo，twitter1516</li>
+</ol>
+<p><em>，把join里的图数据加进来——异构图的处理方法可以不用GAT，最近要看一下文本匹配方法，推荐系统的召回模型，还有今天看的聚类和LSH，看哪个能加在最前面做一个评论排序</em></p>
+<p>debug join看一下nerualnetwork咋被调用的就那个fit</p>
+<h4 id="SENet"><a href="#SENet" class="headerlink" title="SENet"></a>SENet</h4><p>主要思想：通过建模channel之间的关系来矫正channel的特征，以此提升神经网络的表征能力。（原文：adaptively recalibrates channel-wise feature responses by explicitly modelling interdependencies between channels。在图像中，一个channel可以先当于图像的一种特征。）特征矫正是使用全局的信息去加强有用的特征，淡化无用的特征。</p>
+<p>经历整个se结构的卷积处理，这种压缩在膨胀的过程可以看做是不同层特征图数据交融，原本进行1X1的卷积就可以加强非线性和跨通道的信息交互</p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230120143849179.png" alt="image-20230120143849179"></p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230120143941372.png" alt="image-20230120143941372"></p>
+<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230120141428644.png" alt="image-20230120141428644"></p>
+<p><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/image-20230120142834287.png" alt="image-20230120142834287"></p>
+<p>W,H,C   (seq_num,pad_size,seq_len)——一张图片对应一个样本中的n条评论</p>
+<p>对于一个W,H，就相当于一句话pad_size,seq_len</p>
+<p>Squeeze：通道注意力是把一张图压成一列数（每个通道上剩一个数），defend那个注意力相当于通道注意力——每条评论变成一个数意义是什么啊——<em>这个实数某种程度上具有全局的感受野，并且输出的维度和输入的特征通道数相匹配。它表征着在特征通道上响应的全局分布，而且使得靠近输入的层也可以获得全局的感受野，这一点在很多任务中都是非常有用的。使用<strong>全局均值池化</strong>：就是把一个通道上所有的数加起来然后除以元素个数</em>——用在推荐系统的方法中，<strong>squeeze没有采用池化的方法，而是使用了一层卷积操作，将n个二维的向量变成了一个一维向量（元素个数n*n）</strong>——W*H*C—&gt;1*1*C（那这只能用池化——我觉得可以求一个相似度加起来也是一个数好像也没用）</p>
+<p>然后接俩全连接层，把这C个数分别去乘C个通道——scale</p>
+<p>空间注意力是把多个维度压成一张图，捕捉每句话之间的关系，就相当于普通的注意力</p>
+<h3 id="BIGCN"><a href="#BIGCN" class="headerlink" title="BIGCN"></a>BIGCN</h3><p>是对传播结构进行建模（join是对用户和原文的交互）</p>
+<h3 id="Sentence-Bert"><a href="#Sentence-Bert" class="headerlink" title="Sentence Bert"></a>Sentence Bert</h3><p>BERT和RoBERTa在文本语义相似度（Semantic Textual Similarity）等句子对的回归任务上，已经达到了SOTA的结果。但是，它们都需要把两个句子同时送入网络，这样会导致巨大的计算开销.BERT不适合语义相似度搜索，也不适合非监督任务，比如聚类。</p>
+<p>解决聚类和语义搜索的一种常见方法是将每个句子映射到一个向量空间，使得语义相似的句子很接近。</p>
+<p>于是，也有人尝试向BERT输入单句，得到固定大小的sentene embedding。最常用的方法是，平均BERT输出层或使用第一个token（[CLS]的token）的输出。但这却产生了非常不好的sentence embedding，常常还不如averaging GloVe embeddings。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1908.10084.pdf">Sentence-BERT(SBERT)</a>的作者对预训练的BERT进行修改：使用<strong>Siamese and Triplet Network（孪生网络和三胞胎网络）</strong>生成具有语义的句子Embedding向量。语义相近的句子，其Embedding向量距离就比较近，从而可以使用余弦相似度、曼哈顿距离、欧氏距离等找出语义相似的句子。SBERT在保证准确性的同时，可将上述提到BERT/RoBERTa的65小时降低到5秒（计算余弦相似度大概0.01秒）。这样SBERT可以完成某些新的特定任务，比如聚类、基于语义的信息检索等</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://github.com">yangchang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://github.com/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/">http://github.com/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://github.com" target="_blank">yangchang's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/rumor/">rumor</a></div><div class="post_share"><div class="social-share" data-image="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/02/27/Rumor/GMIN%E7%9A%84%E6%89%A9%E5%B1%95%E6%80%9D%E8%B7%AF/"><img class="prev-cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">GMIN的扩展思路</div></div></a></div><div class="next-post pull-right"><a href="/2023/02/27/%E9%85%8D%E7%BD%AE/pycharm%E9%85%8D%E7%BD%AE/"><img class="next-cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/configuration.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">pycharm配置</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/02/27/Rumor/GMIN%E7%9A%84%E6%89%A9%E5%B1%95%E6%80%9D%E8%B7%AF/" title="GMIN的扩展思路"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-27</div><div class="title">GMIN的扩展思路</div></div></a></div><div><a href="/2022/10/14/Rumor/%E6%B0%B4%E5%86%9B%E7%A0%94%E7%A9%B6/" title="水军研究"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-14</div><div class="title">水军研究</div></div></a></div><div><a href="/2022/10/14/Rumor/%E7%BB%BC%E8%BF%B0/" title="rumor综述"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-14</div><div class="title">rumor综述</div></div></a></div><div><a href="/2022/10/14/Rumor/%E8%AE%BA%E6%96%87%E9%87%8C%E7%9A%84%E8%AF%9D/" title="论文里的话"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-14</div><div class="title">论文里的话</div></div></a></div><div><a href="/2022/10/14/Rumor/%E8%B0%A3%E8%A8%80%E4%BC%A0%E6%92%AD/" title="谣言传播介绍"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-14</div><div class="title">谣言传播介绍</div></div></a></div><div><a href="/2023/02/27/Rumor/%E8%B0%A3%E8%A8%80%E7%90%86%E8%AE%BA%EF%BC%88%E5%88%87%E5%85%A5%E7%82%B9%EF%BC%89/" title="谣言理论（切入点）"><img class="cover" src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-27</div><div class="title">谣言理论（切入点）</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">yangchang</div><div class="author-info__description">我把所有不幸当做是一场经历，后来我活的随性洒脱，也终于心无波澜</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" href="https://github.com/yangchang0126"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/yangchang0126" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yangchang0126@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#defend%E6%9E%B6%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">defend架构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%9F%E6%96%87"><span class="toc-number">1.1.</span> <span class="toc-text">原文</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#join%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">join架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">1.3.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E4%BB%A3%E7%A0%81"><span class="toc-number">1.4.</span> <span class="toc-text">目前代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E5%8C%B9%E9%85%8D%E4%BB%BB%E5%8A%A1"><span class="toc-number">2.</span> <span class="toc-text">文本匹配任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SENet"><span class="toc-number">2.1.</span> <span class="toc-text">SENet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BIGCN"><span class="toc-number">3.</span> <span class="toc-text">BIGCN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sentence-Bert"><span class="toc-number">4.</span> <span class="toc-text">Sentence Bert</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/02/27/Rumor/%E8%B0%A3%E8%A8%80%E7%90%86%E8%AE%BA%EF%BC%88%E5%88%87%E5%85%A5%E7%82%B9%EF%BC%89/" title="谣言理论（切入点）"><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="谣言理论（切入点）"></a><div class="content"><a class="title" href="/2023/02/27/Rumor/%E8%B0%A3%E8%A8%80%E7%90%86%E8%AE%BA%EF%BC%88%E5%88%87%E5%85%A5%E7%82%B9%EF%BC%89/" title="谣言理论（切入点）">谣言理论（切入点）</a><time datetime="2023-02-27T12:09:21.000Z" title="发表于 2023-02-27 20:09:21">2023-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/27/Rumor/GMIN%E7%9A%84%E6%89%A9%E5%B1%95%E6%80%9D%E8%B7%AF/" title="GMIN的扩展思路"><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GMIN的扩展思路"></a><div class="content"><a class="title" href="/2023/02/27/Rumor/GMIN%E7%9A%84%E6%89%A9%E5%B1%95%E6%80%9D%E8%B7%AF/" title="GMIN的扩展思路">GMIN的扩展思路</a><time datetime="2023-02-27T11:53:59.000Z" title="发表于 2023-02-27 19:53:59">2023-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/" title="GMIN思路"><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/Rumor.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GMIN思路"></a><div class="content"><a class="title" href="/2023/02/27/Rumor/GMIN%E6%80%9D%E8%B7%AF/" title="GMIN思路">GMIN思路</a><time datetime="2023-02-27T11:53:45.000Z" title="发表于 2023-02-27 19:53:45">2023-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/27/%E9%85%8D%E7%BD%AE/pycharm%E9%85%8D%E7%BD%AE/" title="pycharm配置"><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/configuration.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pycharm配置"></a><div class="content"><a class="title" href="/2023/02/27/%E9%85%8D%E7%BD%AE/pycharm%E9%85%8D%E7%BD%AE/" title="pycharm配置">pycharm配置</a><time datetime="2023-02-27T09:09:02.000Z" title="发表于 2023-02-27 17:09:02">2023-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/27/%E4%BB%A3%E7%A0%81/%E5%BE%AE%E4%BF%A1%E5%A4%A7%E6%95%B0%E6%8D%AEtrick/" title="微信大数据trick"><img src="https://picgo-1315820097.cos.ap-nanjing.myqcloud.com/yyyyyy/CODE.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微信大数据trick"></a><div class="content"><a class="title" href="/2023/02/27/%E4%BB%A3%E7%A0%81/%E5%BE%AE%E4%BF%A1%E5%A4%A7%E6%95%B0%E6%8D%AEtrick/" title="微信大数据trick">微信大数据trick</a><time datetime="2023-02-27T08:34:42.000Z" title="发表于 2023-02-27 16:34:42">2023-02-27</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2023 By yangchang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script src="lucky"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="false" async="async"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
